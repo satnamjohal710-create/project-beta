@@ -15,7 +15,7 @@ A high-performance, three-tier full-stack application engineered to securely reg
 ### 1. Database Relational Schema Design (TablePlus)
 Relational configuration mappings verifying the schema structure, empty data frames, and field indexing definitions inside our local database engine.
 
-![Database Initial Grid](./screenshot_2_backend.jpg)
+![Database Initial Grid](./screenshot_2_backend.png)
 ![Database Column Structure](./screenshot_1_database.png)
 
 ---
@@ -32,7 +32,7 @@ Backend terminal logs confirming that our Express web server is successfully lis
 The responsive corporate hardware logging form alongside our dynamic inventory table, displaying live assets fetched directly from PostgreSQL.
 
 ![Hardware Registration Form](./screenshot_3_frontend_form.png)
-![Dynamic Live Grid Tracking](./screenshot_4_live_matrix.jpg)
+![Dynamic Live Grid Tracking](./screenshot_4_live_matrix.png)
 
 ---
 
