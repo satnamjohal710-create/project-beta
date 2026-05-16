@@ -18,6 +18,7 @@ Designed a resilient PostgreSQL matrix tracking unique hardware constraints and 
 ### 2. Live Node.js API Pipeline Verification
 Backend infrastructure actively listening on network Port 5001 with verified secure database handshake.
 ![Backend Pipeline Status](./screenshot_2_backend.png)
+! (./screenshot_2_backend2.png)
 
 ### 3. Administrative Asset Logging Interface
 Clean UI form built to handle real-time corporate hardware asset registration data.
