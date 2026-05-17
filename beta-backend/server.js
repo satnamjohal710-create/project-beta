@@ -1,54 +1,67 @@
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
-require('dotenv').config();
 
 const app = express();
-app.use(cors());
+const port = process.env.PORT || 5001;
+
+// 1. MIDDLEWARE: This fixes the "Network Error" by opening the security gates
+app.use(cors()); 
 app.use(express.json());
 
-// Initialize connection pool to PostgreSQL (beta_db)
+// 2. DATABASE CONNECTION: Connects to Render PostgreSQL with required SSL
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'beta_db',
-  password: process.env.DB_PASSWORD || 'Satnam123',
-  port: process.env.DB_PORT || 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false // Render requires this for database connections!
+  }
 });
 
-// GET Route: Stream assets out of PostgreSQL
+// 3. AUTO-TABLE CREATOR: Automatically builds your database table if it's missing!
+const initDB = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS assets (
+        id SERIAL PRIMARY KEY,
+        asset_name VARCHAR(255) NOT NULL,
+        serial_number VARCHAR(255) NOT NULL,
+        status VARCHAR(50) NOT NULL
+      );
+    `);
+    console.log("✅ Database tables are ready to go!");
+  } catch (err) {
+    console.error("❌ Database initialization error:", err);
+  }
+};
+initDB();
+
+// 4. GET ROUTE: Fetches all assets to show in your frontend table
 app.get('/api/assets', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM asset_register ORDER BY id ASC');
+    const result = await pool.query('SELECT * FROM assets ORDER BY id DESC');
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Database internal stream failure.');
+    res.status(500).send("Server Error");
   }
 });
 
-// POST Route: Ingest entries and handle Unique violations explicitly
+// 5. POST ROUTE: Receives data from your frontend form and saves it
 app.post('/api/assets', async (req, res) => {
-  const { asset_name, serial_number, ip_address, department } = req.body;
   try {
-    const newAsset = await pool.query(
-      'INSERT INTO asset_register (asset_name, serial_number, ip_address, department) VALUES ($1, $2, $3, $4) RETURNING *',
-      [asset_name, serial_number, ip_address, department]
+    const { assetName, serialNumber, status } = req.body;
+    const result = await pool.query(
+      'INSERT INTO assets (asset_name, serial_number, status) VALUES ($1, $2, $3) RETURNING *',
+      [assetName, serialNumber, status]
     );
-    res.status(201).json(newAsset.rows[0]);
+    res.json(result.rows[0]);
   } catch (err) {
-    // Check if the database thrown error is code '23505' (PostgreSQL code for Unique Key Violation)
-    if (err.code === '23505') {
-      console.log(`[BLOCKED] Duplicate serial number key: ${serial_number}`);
-      res.status(409).send('Conflict: Unique serial constraint validation failed.');
-    } else {
-      console.error(err.message);
-      res.status(500).send('Server runtime pipeline error.');
-    }
+    console.error(err.message);
+    res.status(500).send("Server Error");
   }
 });
 
-const PORT = 5001;
-app.listen(PORT, () => {
-  console.log(`[LIVE] Beta Backend engine active on http://localhost:5001`);
+// 6. START SERVER
+app.listen(port, () => {
+  console.log(`🚀 Server is running smoothly on port ${port}`);
 });
