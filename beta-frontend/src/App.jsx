@@ -5,7 +5,7 @@ function App() {
   // ==========================================
   // ⚠️ PASTE YOUR RENDER BACKEND URL HERE:
   // ==========================================
-  const backendUrl = 'https://beta-backend-api.onrender.com/api/assets'; 
+  const backendUrl = 'https://beta-backend-apis.onrender.com/api/assets'; 
 
   const [formData, setFormData] = useState({
     assetName: '',
