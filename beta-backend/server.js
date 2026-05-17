@@ -1,55 +1,54 @@
 const express = require('express');
-const { Pool } = require('pg');
 const cors = require('cors');
+const { Pool } = require('pg');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(express.json());
 
+// Initialize connection pool to PostgreSQL (beta_db)
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
+  user: process.env.DB_USER || 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  database: process.env.DB_NAME || 'beta_db',
+  password: process.env.DB_PASSWORD || 'Satnam123',
+  port: process.env.DB_PORT || 5432,
 });
 
-// Structural baseline connectivity verification
-pool.connect((err, client, release) => {
-    if (err) {
-        return console.error('DATABASE CONNECTIVITY ERROR:', err.stack);
+// GET Route: Stream assets out of PostgreSQL
+app.get('/api/assets', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM asset_register ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Database internal stream failure.');
+  }
+});
+
+// POST Route: Ingest entries and handle Unique violations explicitly
+app.post('/api/assets', async (req, res) => {
+  const { asset_name, serial_number, ip_address, department } = req.body;
+  try {
+    const newAsset = await pool.query(
+      'INSERT INTO asset_register (asset_name, serial_number, ip_address, department) VALUES ($1, $2, $3, $4) RETURNING *',
+      [asset_name, serial_number, ip_address, department]
+    );
+    res.status(201).json(newAsset.rows[0]);
+  } catch (err) {
+    // Check if the database thrown error is code '23505' (PostgreSQL code for Unique Key Violation)
+    if (err.code === '23505') {
+      console.log(`[BLOCKED] Duplicate serial number key: ${serial_number}`);
+      res.status(409).send('Conflict: Unique serial constraint validation failed.');
+    } else {
+      console.error(err.message);
+      res.status(500).send('Server runtime pipeline error.');
     }
-    console.log('[SUCCESS] Established active connection pipe with beta_db.');
-    release();
+  }
 });
 
-// Route 1: POST - Write a new hardware asset to the register table
-app.post('/assets', async (req, res) => {
-    const { asset_name, serial_number, ip_address, department } = req.body;
-    try {
-        const queryText = 'INSERT INTO asset_register(asset_name, serial_number, ip_address, department) VALUES($1, $2, $3, $4) RETURNING *';
-        const values = [asset_name, serial_number, ip_address, department];
-        const result = await pool.query(queryText, values);
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error("Database write error:", err.message);
-        res.status(500).json({ error: "Failed to log asset payload." });
-    }
-});
-
-// Route 2: GET - Fetch all logged network assets for the dynamic grid
-app.get('/assets', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM asset_register ORDER BY id DESC');
-        res.status(200).json(result.rows);
-    } catch (err) {
-        console.error("Database retrieval error:", err.message);
-        res.status(500).json({ error: "Failed to fetch asset array." });
-    }
-});
-
+const PORT = 5001;
 app.listen(PORT, () => {
-    console.log(`==================================================`);
-    console.log(`[LIVE] Beta Backend running on http://localhost:${PORT}`);
-    console.log(`Waiting for IT asset data transmissions...`);
-    console.log(`==================================================`);
+  console.log(`[LIVE] Beta Backend engine active on http://localhost:5001`);
 });
