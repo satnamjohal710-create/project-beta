@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css'; 
 
 function App() {
-  // ==========================================
-  // ⚠️ PASTE YOUR RENDER BACKEND URL HERE:
-  // ==========================================
+
   const backendUrl = 'https://beta-backend-apis.onrender.com/api/assets'; 
 
   const [formData, setFormData] = useState({
