@@ -1,4 +1,3 @@
-/* 1. MASTER VARIABLES (The Pro Color Palette) */
 :root {
   --bg-primary: #0f172a;      /* Deep Slate for the main background */
   --bg-secondary: #1e293b;    /* Lighter Slate for cards and forms */
@@ -11,7 +10,6 @@
   --transition-speed: 0.2s;
 }
 
-/* 2. GLOBAL RESET & TYPOGRAPHY */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -28,14 +26,12 @@ body {
   justify-content: center;
 }
 
-/* 3. APP CONTAINER */
 .app-container {
   max-width: 1000px;
   width: 100%;
   margin: 0 auto;
 }
 
-/* 4. MODERN CARDS (For your forms and tables) */
 .card {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -45,7 +41,6 @@ body {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
-/* 5. TYPOGRAPHY */
 h1, h2 {
   color: var(--text-main);
   margin-bottom: 1.5rem;
@@ -53,7 +48,6 @@ h1, h2 {
   letter-spacing: -0.02em;
 }
 
-/* 6. PRO-LEVEL FORMS */
 .form-group {
   margin-bottom: 1.5rem;
   display: flex;
@@ -79,13 +73,11 @@ input, select {
   transition: border-color var(--transition-speed) ease;
 }
 
-/* The glowing focus effect */
 input:focus, select:focus {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
-/* 7. MODERN BUTTONS */
 button {
   background-color: var(--accent-color);
   color: #fff;
@@ -107,7 +99,6 @@ button:active {
   transform: scale(0.98); /* Satisfying click effect */
 }
 
-/* 8. SLEEK DATA TABLES */
 .data-table {
   width: 100%;
   border-collapse: collapse;

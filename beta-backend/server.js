@@ -5,19 +5,16 @@ const { Pool } = require('pg');
 const app = express();
 const port = process.env.PORT || 5001;
 
-// 1. MIDDLEWARE: This fixes the "Network Error" by opening the security gates
 app.use(cors()); 
 app.use(express.json());
 
-// 2. DATABASE CONNECTION: Connects to Render PostgreSQL with required SSL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // Render requires this for database connections!
+    rejectUnauthorized: false 
   }
 });
 
-// 3. AUTO-TABLE CREATOR: Automatically builds your database table if it's missing!
 const initDB = async () => {
   try {
     await pool.query(`
@@ -35,7 +32,6 @@ const initDB = async () => {
 };
 initDB();
 
-// 4. GET ROUTE: Fetches all assets to show in your frontend table
 app.get('/api/assets', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM assets ORDER BY id DESC');
@@ -46,7 +42,6 @@ app.get('/api/assets', async (req, res) => {
   }
 });
 
-// 5. POST ROUTE: Receives data from your frontend form and saves it
 app.post('/api/assets', async (req, res) => {
   try {
     const { assetName, serialNumber, status } = req.body;
@@ -61,7 +56,6 @@ app.post('/api/assets', async (req, res) => {
   }
 });
 
-// 6. START SERVER
 app.listen(port, () => {
   console.log(`🚀 Server is running smoothly on port ${port}`);
 });
