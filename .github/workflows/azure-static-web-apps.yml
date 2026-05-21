@@ -31,11 +31,11 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          ###### Production App Configurations ######
-          app_location: "/"                  # Root folder where package.json sits
-          api_location: ""                   # Empty because we are using Container Apps for backend
-          output_location: "dist"            # Matches the output of your 'vite build' script
-          app_build_command: "npm run build" # Forces Oryx to execute your Vite build step directly
+                    ###### Production App Configurations ######
+          app_location: "/project-beta"      # Change this to match your subfolder name exactly!
+          api_location: ""                   
+          output_location: "dist"            
+          app_build_command: "npm run build" 
           ###### End of App Configurations ######
 
   close_pull_request_job:
