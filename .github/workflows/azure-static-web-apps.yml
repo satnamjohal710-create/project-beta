@@ -22,16 +22,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '20' # Removed lock-file caching to prevent root crashes
 
-      # 1. Native Build Step: Compiles the app into 'dist' locally on the runner
+      # 1. Native Build Step: Runs explicitly inside the project subfolder
       - name: Install Dependencies & Build
         run: |
-          npm ci
+          npm install
           npm run build
+        working-directory: "." # If your package.json is nested, change this to "./your-folder-name"
 
-      # 2. Azure Deployment Step: Purely uploads the pre-compiled 'dist' folder
+      # 2. Azure Deployment Step: Uploads the pre-compiled 'dist' folder
       - name: Deploy to Azure SWA
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -43,7 +43,7 @@ jobs:
           app_location: "/"                  
           api_location: ""                   
           output_location: "dist"            
-          skip_app_build: true # 🌟 Crucial: Tells Azure to SKIP Oryx compilation and use our pre-built 'dist' folder directly!
+          skip_app_build: true # Tells Azure to skip Oryx and use our pre-built files
           ###### End of App Configurations ######
 
   close_pull_request_job:
