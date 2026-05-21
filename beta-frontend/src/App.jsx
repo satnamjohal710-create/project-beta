@@ -3,8 +3,8 @@ import './App.css';
 
 function App() {
 
+// Change your old localhost string to this dynamic Vite variable:
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-
 const [formData, setFormData] = useState({
     assetName: '',
     serialNumber: '',
