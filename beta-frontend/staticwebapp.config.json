@@ -1,6 +1,8 @@
 {
+  "trailingSlash": "auto",
   "navigationFallback": {
-    "rewrite": "/index.html"
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*.{js,css,png,jpg,gif,svg}", "*.js", "*.css"]
   },
   "mimeTypes": {
     ".js": "application/javascript",
