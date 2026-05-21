@@ -24,15 +24,15 @@ jobs:
         with:
           node-version: '20'
 
-      # 1. Native Build Step: Runs explicitly inside your project subfolder
+      # 1. Native Build Step: Compiles to dist, then shifts it to 'vite' at the root level
       - name: Install Dependencies & Build
         run: |
           npm install
           npm run build
-          mv dist ../vite
-        working-directory: "./project-beta" # Tells GitHub to jump inside your true project folder
+          mv dist vite
+        working-directory: "." # Looks right at the main repository layer
 
-      # 2. Azure Deployment Step: Uploads the pre-compiled 'vite' folder
+      # 2. Azure Deployment Step: Uploads our manually created 'vite' artifact folder
       - name: Deploy to Azure SWA
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -41,10 +41,10 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           ###### Production App Configurations ######
-          app_location: "/project-beta"      # Points to your subfolder identity
-          api_location: ""                   # Empty because we are using Container Apps for backend
-          output_location: "vite"            # Matches the folder name Azure portal expects
-          skip_app_build: true               # Tells Azure to skip Oryx and use our pre-built files
+          app_location: "/"                  # Root path matching the repository layout
+          api_location: ""                   
+          output_location: "vite"            # Matches the target folder name Azure portal expects
+          skip_app_build: true               # Instructs Azure to bypass Oryx and use our compiled assets
           ###### End of App Configurations ######
 
   close_pull_request_job:
