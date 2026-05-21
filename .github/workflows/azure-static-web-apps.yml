@@ -24,13 +24,13 @@ jobs:
         with:
           node-version: '20'
 
-      # 1. Native Build Step: Compiles to dist, then shifts it to 'vite' at the root level
-      - name: Install Dependencies & Build
+      # 1. Monorepo Build Step: Run natively inside your true beta-frontend folder
+      - name: Install Dependencies & Build Frontend
         run: |
           npm install
           npm run build
-          mv dist vite
-        working-directory: "." # Looks right at the main repository layer
+          mv dist ../vite
+        working-directory: "./beta-frontend" # 🌟 Directs GitHub to step inside your true React/Vite source folder
 
       # 2. Azure Deployment Step: Uploads our manually created 'vite' artifact folder
       - name: Deploy to Azure SWA
@@ -41,10 +41,10 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           ###### Production App Configurations ######
-          app_location: "/"                  # Root path matching the repository layout
-          api_location: ""                   
+          app_location: "/beta-frontend"     # 🌟 Points directly to your frontend code directory
+          api_location: ""                   # Empty because backend is hosted separately
           output_location: "vite"            # Matches the target folder name Azure portal expects
-          skip_app_build: true               # Instructs Azure to bypass Oryx and use our compiled assets
+          skip_app_build: true               # Instructs Azure to bypass Oryx and use our pre-built assets
           ###### End of App Configurations ######
 
   close_pull_request_job:
