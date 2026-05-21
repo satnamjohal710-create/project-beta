@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './App.css'; 
 
 function App() {
-
-// Change your old localhost string to this dynamic Vite variable:
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-const [formData, setFormData] = useState({
+  // Your dynamic Vite environment variable setup
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+  
+  const [formData, setFormData] = useState({
     assetName: '',
     serialNumber: '',
     status: 'Active'
@@ -13,10 +13,10 @@ const [formData, setFormData] = useState({
   
   const [assets, setAssets] = useState([]);
 
-
   const fetchAssets = async () => {
     try {
-      const response = await fetch(backendUrl);
+      // 🌟 FIXED: Changed backendUrl to API_URL
+      const response = await fetch(`${API_URL}/api/assets`); 
       if (response.ok) {
         const data = await response.json();
         setAssets(data);
@@ -37,7 +37,8 @@ const [formData, setFormData] = useState({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(backendUrl, {
+      // 🌟 FIXED: Changed backendUrl to API_URL
+      const response = await fetch(`${API_URL}/api/assets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -46,7 +47,7 @@ const [formData, setFormData] = useState({
       if (response.ok) {
         alert('Asset successfully registered! 🚀');
         setFormData({ assetName: '', serialNumber: '', status: 'Active' });
-        fetchAssets(); // Instantly refreshes the table with your new data
+        fetchAssets(); 
       } else {
         alert('Failed to register asset. Check server logs.');
       }
@@ -95,8 +96,8 @@ const [formData, setFormData] = useState({
             {assets.length > 0 ? (
               assets.map((asset) => (
                 <tr key={asset.id}>
-                  <td>{asset.asset_name}</td>
-                  <td>{asset.serial_number}</td>
+                  <td>{asset.asset_name || asset.assetName}</td>
+                  <td>{asset.serial_number || asset.serialNumber}</td>
                   <td>{asset.status}</td>
                 </tr>
               ))
