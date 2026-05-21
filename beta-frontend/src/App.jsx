@@ -3,8 +3,7 @@ import './App.css';
 
 function App() {
 
-  const backendUrl = 'https://beta-backend-apis.onrender.com/api/assets'; 
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001/api/assets';
   const [formData, setFormData] = useState({
     assetName: '',
     serialNumber: '',
@@ -13,7 +12,7 @@ function App() {
   
   const [assets, setAssets] = useState([]);
 
-  // Fetch data from the database as soon as the page loads
+
   const fetchAssets = async () => {
     try {
       const response = await fetch(backendUrl);
