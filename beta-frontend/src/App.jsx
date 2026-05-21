@@ -3,8 +3,9 @@ import './App.css';
 
 function App() {
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001/api/assets';
-  const [formData, setFormData] = useState({
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
+const [formData, setFormData] = useState({
     assetName: '',
     serialNumber: '',
     status: 'Active'
