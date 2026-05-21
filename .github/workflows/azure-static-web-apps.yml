@@ -1,20 +1,8 @@
-name: Azure Static Web Apps CI/CD
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
-
-jobs:
-  build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event_action != 'closed')
-    runs-on: ubuntu-latest
-    name: Build and Deploy Job
-    steps:
+ build_and_deploy_job:
+  if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event_action != 'closed')
+  runs-on: ubuntu-latest
+  name: Build and Deploy Job
+   steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
@@ -24,15 +12,14 @@ jobs:
         with:
           node-version: '20'
 
-      # 1. Monorepo Build Step: Run natively inside your true beta-frontend folder
+      # 1. Clean Monorepo Build Step: Install and build right inside beta-frontend
       - name: Install Dependencies & Build Frontend
         run: |
           npm install
           npm run build
-          mv dist ../vite
-        working-directory: "./beta-frontend" # 🌟 Directs GitHub to step inside your true React/Vite source folder
+        working-directory: "./beta-frontend"
 
-      # 2. Azure Deployment Step: Uploads our manually created 'vite' artifact folder
+      # 2. Azure Deployment Step: Direct Azure straight to the generated dist folder
       - name: Deploy to Azure SWA
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -41,20 +28,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           ###### Production App Configurations ######
-          app_location: "/beta-frontend"     # 🌟 Points directly to your frontend code directory
-          api_location: ""                   # Empty because backend is hosted separately
-          output_location: "vite"            # Matches the target folder name Azure portal expects
-          skip_app_build: true               # Instructs Azure to bypass Oryx and use our pre-built assets
+          app_location: "/beta-frontend"
+          api_location: ""
+          app_artifact_location: "dist" 
           ###### End of App Configurations ######
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event_action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          action: "close"
