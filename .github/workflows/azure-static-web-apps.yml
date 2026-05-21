@@ -27,9 +27,9 @@
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          ###### Production App Configurations ######
+                   ###### Production App Configurations ######
           app_location: "/beta-frontend"
           api_location: ""
           app_artifact_location: "beta-frontend/dist"
-          skip_app_build: true # 🌟 This forces Azure to use your exact pre-built files!
+          skip_app_build: true # 🌟 Forces Azure to bypass its own build engine and use your clean dist assets!
           ###### End of App Configurations ######
