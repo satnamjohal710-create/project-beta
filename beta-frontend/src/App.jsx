@@ -1,116 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import './App.css'; 
+import React, { useState } from 'react';
 
 function App() {
-  // Your dynamic Vite environment variable setup
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
-  
+  const [step, setStep] = useState('intake');
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    assetName: '',
-    serialNumber: '',
-    status: 'Active'
+    name: '', email: '', location: '', language: 'English', goal: 'Cloud Engineering'
   });
-  
-  const [assets, setAssets] = useState([]);
 
-  const fetchAssets = async () => {
-    try {
-      // 🌟 FIXED: Changed backendUrl to API_URL
-      const response = await fetch(`${API_URL}/api/assets`); 
-      if (response.ok) {
-        const data = await response.json();
-        setAssets(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch assets:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAssets();
-  }, []);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleIntakeSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      // 🌟 FIXED: Changed backendUrl to API_URL
-      const response = await fetch(`${API_URL}/api/assets`, {
+      const response = await fetch(`${API_URL}/api/users/intake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          location: formData.location,
+          languages: [formData.language],
+          careerGoals: [formData.goal]
+        })
       });
-
+      const data = await response.json();
       if (response.ok) {
-        alert('Asset successfully registered! 🚀');
-        setFormData({ assetName: '', serialNumber: '', status: 'Active' });
-        fetchAssets(); 
+        setProfile(data);
+        setStep('dashboard');
       } else {
-        alert('Failed to register asset. Check server logs.');
+        alert(data.error || "Intake registration failed.");
       }
-    } catch (error) {
-      console.error('Network Error:', error);
-      alert('Network Error. Is your backend link correct?');
+    } catch (err) {
+      console.error(err);
+      alert("Error linking to the backend cloud services.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="app-container">
-      <div className="card">
-        <h2>Register New Asset</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Asset Name</label>
-            <input type="text" name="assetName" placeholder="e.g. Dell XPS 15" value={formData.assetName} onChange={handleChange} required />
-          </div>
-          <div className="form-group">
-            <label>Serial Number</label>
-            <input type="text" name="serialNumber" placeholder="e.g. SN-987654321" value={formData.serialNumber} onChange={handleChange} required />
-          </div>
-          <div className="form-group">
-            <label>Deployment Status</label>
-            <select name="status" value={formData.status} onChange={handleChange}>
-              <option value="Active">Active</option>
-              <option value="In Repair">In Repair</option>
-              <option value="Decommissioned">Decommissioned</option>
-            </select>
-          </div>
-          <button type="submit">Deploy Asset</button>
-        </form>
-      </div>
+    <div className="min-h-screen bg-slate-900 text-slate-100 p-6 flex flex-col items-center justify-center">
+      <header className="mb-8 text-center">
+        <h1 className="text-4xl font-extrabold text-sky-400 tracking-tight">Nexus Career Services</h1>
+        <p className="text-slate-400 mt-2 text-lg">End-to-End Cloud Virtual Advisory Platform</p>
+      </header>
 
-      <div className="card">
-        <h2>Active Asset Registry</h2>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Asset Name</th>
-              <th>Serial Number</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {assets.length > 0 ? (
-              assets.map((asset) => (
-                <tr key={asset.id}>
-                  <td>{asset.asset_name || asset.assetName}</td>
-                  <td>{asset.serial_number || asset.serialNumber}</td>
-                  <td>{asset.status}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" style={{ textAlign: 'center', color: '#94a3b8' }}>
-                  No assets found in the database yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {step === 'intake' ? (
+        <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-xl border border-slate-700">
+          <h2 className="text-2xl font-bold mb-6 text-slate-200">Candidate Onboarding Portal</h2>
+          <form onSubmit={handleIntakeSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-slate-300">Full Name</label>
+              <input type="text" className="w-full p-3 bg-slate-700 rounded-xl border border-slate-600 focus:outline-none focus:border-sky-500 transition" placeholder="Satnam Singh" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-slate-300">Email Address</label>
+              <input type="email" className="w-full p-3 bg-slate-700 rounded-xl border border-slate-600 focus:outline-none focus:border-sky-500 transition" placeholder="satnam@example.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-slate-300">Geographic Location</label>
+              <input type="text" className="w-full p-3 bg-slate-700 rounded-xl border border-slate-600 focus:outline-none focus:border-sky-500 transition" placeholder="e.g. Simcoe County, ON" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} required />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-slate-300">Primary Language</label>
+                <select className="w-full p-3 bg-slate-700 rounded-xl border border-slate-600 focus:outline-none focus:border-sky-500" value={formData.language} onChange={e => setFormData({...formData, language: e.target.value})}>
+                  <option>English</option>
+                  <option>French</option>
+                  <option>Spanish</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-slate-300">Target Track</label>
+                <select className="w-full p-3 bg-slate-700 rounded-xl border border-slate-600 focus:outline-none focus:border-sky-500" value={formData.goal} onChange={e => setFormData({...formData, goal: e.target.value})}>
+                  <option>Cloud Engineering</option>
+                  <option>Cybersecurity</option>
+                  <option>IT Support Systems</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" disabled={loading} className="w-full py-3.5 bg-sky-600 hover:bg-sky-500 disabled:bg-slate-700 font-bold rounded-xl transition duration-200 mt-4 shadow-lg shadow-sky-600/20">
+              {loading ? "Routing Profile Match..." : "Initialize Match Routing"}
+            </button>
+          </form>
+        </div>
+      ) : (
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+          <div className="md:col-span-2 bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-xl">
+            <span className="bg-sky-500/10 text-sky-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Account Verified</span>
+            <h2 className="text-3xl font-extrabold text-white mt-4 mb-2">Welcome to Your Dashboard, {profile?.user?.name}!</h2>
+            <p className="text-slate-400">Your tailored cloud milestone pathway is running below.</p>
+            
+            <div className="mt-8 p-6 bg-slate-700/40 rounded-xl border border-slate-600">
+              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Assigned Strategic Advisor</span>
+              <h3 className="text-xl font-bold text-sky-300 mt-1">
+                {profile?.matchedAdvisor ? profile.matchedAdvisor.name : "Analyzing background match parameters..."}
+              </h3>
+              <p className="text-sm text-slate-400 mt-1">Specialization Focus: {formData.goal}</p>
+              {profile?.matchedAdvisor && (
+                <p className="text-xs text-slate-500 mt-2">Contact: {profile.matchedAdvisor.email}</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-slate-200 mb-4">Milestone Progress</h3>
+              <ul className="space-y-4 text-sm font-medium">
+                <li className="flex items-center gap-3 text-emerald-400">
+                  <span className="bg-emerald-500/20 p-1 rounded-full text-xs">✔</span> Intake Profile Registered
+                </li>
+                <li className="flex items-center gap-3 text-sky-400">
+                  <span className="bg-sky-500/20 p-1 px-2 rounded-full text-xs animate-pulse">⏳</span> Advisor Match Assigned
+                </li>
+                <li className="flex items-center gap-3 text-slate-500">
+                  <span className="bg-slate-700 p-1 px-2 rounded-full text-xs">🔒</span> Entra ID Microsoft Sync
+                </li>
+              </ul>
+            </div>
+            <button onClick={() => setStep('intake')} className="w-full py-2.5 bg-slate-700 hover:bg-slate-600 font-semibold rounded-xl text-xs tracking-wide transition mt-6">
+              Reset Session
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
