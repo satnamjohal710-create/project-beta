@@ -41,14 +41,14 @@ The responsive corporate hardware logging form alongside our dynamic inventory t
 ### 4. Automated Cloud Infrastructure Provisioning
 The presentation layer has been fully migrated from a local runtime engine to a globally distributed cloud environment on Azure Static Web Apps.
 
-![Azure Static App Resource Setup](./Static app Created.png)
+![Azure Static App Resource Setup](./Static%20app%20Created.png)
 
 ---
 
 ### 5. Automated Multi-Step CI/CD Engine
 The repository is completely automated using GitHub Actions. Upon a code push to the `main` branch, a runner container spins up an Ubuntu environment, steps directly into the monorepo subfolder, runs a native Vite production build, realigns target folders, and updates the CDN without manual intervention.
 
-![GitHub Actions Green Pipeline Victory](./CICD Pipeline.png)
+![GitHub Actions Green Pipeline Victory](./CICD%20Pipeline.png)
 
 ---
 
