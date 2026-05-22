@@ -1,23 +1,41 @@
-Nexus Career Services — Virtual Advisory Platform
-A high-performance, data-driven profile routing engine engineered to match incoming job seekers with strategic cloud advisors in real time. Built with an Identity-First architecture using Single Table Inheritance, this system features multilingual array matching, automated schedule briefing, and end-to-end deployment workflows across the Microsoft Azure cloud ecosystem.
-🛠️ System Architecture & Data Flow
-This platform separates concerns across three major infrastructure tiers:
-1. The User Interface (Frontend): A reactive single-page app built with React (Vite) and deployed on Azure Static Web Apps. 🔗 Main component implementation: beta-frontend/src/App.jsx
-2. The Routing Engine (Backend): A RESTful API built on Node.js (Express) hosted on Azure App Service Web Containers, utilizing custom CORS configurations. 🔗 Server engine entry point: beta-backend/server.js
-3. The Data Repository (Database): A relational storage system managed via Azure PostgreSQL Flexible Server, utilizing advanced text array querying.
-<!-- end list -->
- [Frontend Client View]  --> (HTTP POST with JSON) -->  [Node.js API Middleware]
-(Azure Static Web Apps)                                  (Azure App Service)
-                                                                 |
-                                                    (Parameterized Index Scan)
-                                                                 ↓
-                                                    [Azure PostgreSQL Database]
-                                                    - public.users  (Identity)
-                                                    - public.advisors (Extension)
-                                                    - public.appointments (Matrix)
+Ah, I see exactly what happened! Because you pasted the markdown code straight into the README.md as plain regular prose, GitHub doesn't know it's supposed to format it. Instead of drawing beautiful stylized cards, headers, bulleted grids, and clean script boxes, it is rendering everything as one massive, hard-to-read wall of text blocks.
+Let’s clean this up entirely. We will use proper markdown syntax (### for structured subheadings, --- for clean dividers, backticks for highlighted system names, and structured code containers). This format instantly forces GitHub to transform the layout into a clean, highly professional developer page with active links!
+🛠️ How to fix it in GitHub right now:
+1. Click the Pencil Icon 🖥️ (Edit button) on the top right area of your GitHub file view.
+2. Delete everything currently inside that file.
+3. Copy the raw layout container below and paste it in.
+4. Click Commit changes at the bottom.
+# 🚀 Nexus Career Services — Virtual Advisory Platform
 
-🗄️ Relational Database Schema Architecture
-The database consolidates all physical human entities into a singular table (public.users) to streamline authentication and security. Role variations are managed dynamically via a role constraint, while an extension table (public.advisors) isolates professional traits via a cascading foreign key relationship.
+A high-performance, data-driven profile routing engine engineered to match incoming job seekers with strategic cloud advisors in real time. Built with an Identity-First architecture using **Single Table Inheritance**, this system features multilingual array matching, automated schedule briefing, and end-to-end deployment workflows across the **Microsoft Azure** cloud ecosystem.
+
+---
+
+## 🛠️ System Architecture & Data Flow
+
+This platform separates concerns across three major infrastructure tiers:
+
+* **🖥️ User Interface (Frontend):** A reactive single-page app built with **React (Vite)** and deployed on **Azure Static Web Apps**.
+  * 🔗 *Main Component File:* [beta-frontend/src/App.jsx](beta-frontend/src/App.jsx)
+* **⚙️ Routing Engine (Backend):** A RESTful API built on **Node.js (Express)** hosted on **Azure App Service Web Containers**, utilizing custom CORS configurations.
+  * 🔗 *Server Engine File:* [beta-backend/server.js](beta-backend/server.js)
+* **🗄️ Data Repository (Database):** A relational storage system managed via **Azure PostgreSQL Flexible Server**, utilizing advanced text array querying.
+
+
+[Frontend Client View]  --> (HTTP POST with JSON) -->  [Node.js API Middleware]
+(Azure Static Web Apps)                                  (Azure App Service)
+|
+(Parameterized Index Scan)
+↓
+[Azure PostgreSQL Database]
+
+---
+
+## 🗄️ Relational Database Schema Architecture
+
+The database consolidates all physical human entities into a singular table (`public.users`) to streamline authentication and security. Role variations are managed dynamically via a `role` constraint, while an extension table (`public.advisors`) isolates professional traits via a cascading foreign key relationship.
+
+```sql
 -- Teardown script to cut dependency locks and clear old structural definitions
 DROP TABLE IF EXISTS public.appointments CASCADE;
 DROP TABLE IF EXISTS public.advisors CASCADE;
@@ -52,9 +70,9 @@ CREATE TABLE public.appointments (
     status VARCHAR(50) DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-Multilingual Validation Seeding
-Run this block to initialize production testing targets across English and French language profiles:
+```
+🧪 Multilingual Validation Seeding
+Run this block inside your database terminal window to initialize production testing targets across English and French language profiles:
 -- Seed Sarah Jenkins (English Tracking Option)
 INSERT INTO public.users (name, email, role, languages, career_goals) 
 VALUES ('Sarah Jenkins (Senior Cloud Expert)', 'sarah@company.com', 'Advisor', '{"English"}', '{"Cloud Engineering"}');
@@ -69,24 +87,28 @@ VALUES ('Jean-Pierre Cloutier (Cloud Architect)', 'jeanpierre@company.com', 'Adv
 INSERT INTO public.advisors (user_id, skills, is_active) 
 VALUES ((SELECT id FROM public.users WHERE email = 'jeanpierre@company.com' LIMIT 1), '{"Cloud Engineering", "Azure Systems"}', true);
 
-💻 Codebase Files & Core Logic Links
-Instead of maintaining duplicate code structures in the documentation, click the links below to access the live runtime code files directly within this repository:
+💻 Codebase Source Modules
+Instead of maintaining duplicate code structures directly inside the documentation, use the links below to access the live runtime code files inside this repository path:
 • 📂 Backend Core Layer: beta-backend/server.js • Features: Configures Express endpoints, provisions database pool connections securely handling Azure SSL firewalls, blocks SQL injection hazards using parameterized tokens, and runs matching mechanics via the PostgreSQL array evaluation operator ($1 = ANY(u.languages)).
 • 📂 Frontend View Layer: beta-frontend/src/App.jsx • Features: Manages state properties via React hooks, intercepts default browser refreshes (e.preventDefault()), fires asynchronous network handshakes (fetch()), and handles layout rendering to toggle between intake forms and milestone tracking cards.
+
 🛠️ Production Ledger: Resolved Architectural Failures
 During the platform's multi-cloud deployment sprint, several complex system hurdles were systematically cataloged and resolved:
 1. The Empty Relationship Matrix Barrier (0 rows returned on JOIN)
 • Symptom: Forms processed successfully, but the frontend dashboard repeatedly dropped advisor metrics and defaulted to an infinite fallback query mode.
 • Root Cause: The database entity extension pointer column (user_id inside public.advisors) was completely populated with NULL states. Because the NOT NULL restriction was bypassed during schema tuning, the relationship keys dropped off. The backend execution script was trying to join an operational record against an empty space, filtering the row completely out of the response payload array.
-• Resolution Query: See structural layout inside beta-backend/server.js for exact query bindings. ALTER TABLE public.advisors ALTER COLUMN user_id SET NOT NULL;  -- Re-seed profile mappings using subqueries targeting exact unique fields UPDATE public.advisors SET user_id = (SELECT id FROM public.users WHERE email = 'sarah@company.com' LIMIT 1) WHERE user_id IS NULL;
-2. Browser Cross-Origin Security Interceptions (CORS Blockades)
+• Resolution Query: See structural layout inside beta-backend/server.js for exact query bindings. ALTER TABLE public.advisors ALTER COLUMN user_id SET NOT NULL;
+
+3. Browser Cross-Origin Security Interceptions (CORS Blockades)
 • Symptom: Form components timed out during submission across live networks. The browser console logged a cross-origin network error blocking request routing.
 • Root Cause: The client interface was mapped to an Azure Static Web App address string, while the server engine was listening on an independent Azure App Service domain stack. This layout broke the native Same-Origin Policy enforced by browsers to prevent background data theft.
 • Resolution Middleware: Added the native node cors package to server.js and wired it into the Express execution context to inject explicit permission clearances into headers. Check out the setup block around line 11 of beta-backend/server.js: const cors = require('cors'); app.use(cors({ origin: '*' })); // Sets Access-Control-Allow-Origin parameters globally
-3. Cascading Database Resource Locks (Relation Already Exists)
+
+4. Cascading Database Resource Locks (Relation Already Exists)
 • Symptom: Structural migration scripts or type definitions executed inside TablePlus returned a critical error notifying that relation objects already existed.
 • Root Cause: Tables like public.appointments held active foreign key tracking parameters locked to the primary keys inside public.advisors. PostgreSQL locked down the parent directories to safeguard database integrity, preventing developers from manually altering or dropping the entities out of storage memory.
 • Resolution Query: Added the CASCADE parameter to break lock dependency chains and force schema re-compilations: DROP TABLE IF EXISTS public.appointments CASCADE; DROP TABLE IF EXISTS public.advisors CASCADE;
+
 🚀 Microsoft Azure Provisioning Runbook
 To push your local workspace directories to a global web network, follow this production setup guide in the Azure portal:
 1. Azure Database for PostgreSQL Flexible Server
@@ -107,6 +129,8 @@ To push your local workspace directories to a global web network, follow this pr
 • Matching Algorithm Query Execution: < 50ms using native PostgreSQL indexed array evaluations.
 • Application Scalability Index: Unified user schemas reduce data duplication by 100%, optimizing memory allocations.
 • Deployment Automation Time: < 120 seconds via integrated GitHub Actions deployment pipelines.
+
+
 Lead Systems Engineer: Satnam Singh
 Deployment Status Certification: Stable Production Build Approved
 This architecture manual serves as the golden build reference for the complete, end-to-end multi-cloud Nexus Career Platform integration.
